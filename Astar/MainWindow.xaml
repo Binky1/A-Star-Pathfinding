@@ -25,5 +25,7 @@
         </Grid.RowDefinitions>
         <Button Click="Start_Click" Grid.Column="5" Grid.Row="0">Start!</Button>
         <Button Click="Obs_Click" Grid.Column="5" Grid.Row="1">Obstacles</Button>
+        <Button Click="Restart" Grid.Column="5" Grid.Row="2">Restart</Button>
+        
     </Grid>
 </Window>
