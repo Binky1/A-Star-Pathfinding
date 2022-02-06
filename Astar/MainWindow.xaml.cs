@@ -90,6 +90,10 @@ namespace Astar
             int column = FindColumn(currentNode);
 
             //TODO improve the for loop
+            if (Dead(currentNode) == 0 && currentNode != endNode)
+            {
+                DeadEnd.Add(currentNode);
+            }
             Direct(row, column);
 
             if (OpenList.Contains(endNode))
@@ -98,7 +102,7 @@ namespace Astar
             }
 
 
-            if (currentNode != endNode && attempts ==300)
+            if (currentNode != endNode && attempts == 100)
             {
                 MessageBox.Show("Not Found");
                 Console.WriteLine("Not Found");
@@ -121,20 +125,16 @@ namespace Astar
 
 
 
-            if (Dead(currentNode) == 0)
-            {
-                DeadEnd.Add(currentNode);
-            }
 
 
             if (currentNode != endNode && !found)
             {
                 Finding();
             }
-
-
-            Console.WriteLine(ClosedList.Count);
-
+            else
+            {
+                Console.WriteLine(ClosedList.Count);
+            }
 
 
         }
@@ -178,9 +178,46 @@ namespace Astar
             }
         }
 
+
+        
         private void GetPath()
         {
-            Path.Add(endNode);
+
+            for (int j = ClosedList.Count -1 ; j >= 0; j--)
+            {
+                Console.WriteLine(ClosedList[j] + " " + j);
+            }
+
+
+            ClosedList.Remove(startNode);
+            int i;
+            int row;
+            int column;
+            int row2;
+            int column2;
+            int sum = 0, sum2 = 0;
+            List <int> sums2 = new List<int>();
+            row2 = FindRow(ClosedList[ClosedList.Count -1]);
+            column2 = FindColumn(ClosedList[ClosedList.Count -1]);
+            sums2.Add(row2 + column2);
+            for (i = ClosedList.Count -2; i >= 0; i--)
+            {
+                row = FindRow(ClosedList[i]);
+                column = FindColumn(ClosedList[i]);
+                row2 = FindRow(ClosedList[i + 1]);
+                column2 = FindColumn(ClosedList[i + 1]);
+
+                sum2 = sums2[sums2.Count - 1];
+                sum = row + column;
+                if (sum2 == sum + 1 || sum2 + 1 == sum)
+                {
+                    Path.Add(ClosedList[i]);
+                    sums2.Add(row + column);
+                }
+                
+            }
+            //Path.Add(ClosedList[i]);
+            Path.Add(startNode);
         }
 
         private int Dead(Button bt)
@@ -192,12 +229,12 @@ namespace Astar
                 try
                 {
 
-                    if (i == 0 && Buttons[row - 1, column] != startNode && !Obstacles.Contains(Buttons[row - 1, column]) && !ClosedList.Contains(Buttons[row - 1, column]))
+                    if (i == 0 && Buttons[row - 1, column] != startNode  && !Obstacles.Contains(Buttons[row - 1, column]) && !ClosedList.Contains(Buttons[row - 1, column]))
                     {
                         count++;
 
                     }
-                    else if (i == 1 && Buttons[row, column + 1] != startNode && !Obstacles.Contains(Buttons[row, column + 1]) && !ClosedList.Contains(Buttons[row, column + 1]))
+                    else if (i == 1 && Buttons[row, column + 1] != startNode  && !Obstacles.Contains(Buttons[row, column + 1]) && !ClosedList.Contains(Buttons[row, column + 1]))
                     {
                         count++;
                     }
@@ -348,13 +385,29 @@ namespace Astar
         {
             ClosedList.Add(startNode);
             Finding();
-            ClosedList.Add(endNode);
 
-            for (int i = 0; i < ClosedList.Count; i++)
+            if (!found)
             {
-                if (ClosedList[i] != endNode && ClosedList[i] != startNode)
+                for (int i = 0; i < ClosedList.Count; i++)
                 {
-                    ClosedList[i].Background = Brushes.Magenta;
+                    if (ClosedList[i] != endNode && ClosedList[i] != startNode)
+                    {
+                        ClosedList[i].Background = Brushes.Magenta;
+                    }
+                }
+                for (int i = 0; i < DeadEnd.Count; i++)
+                {
+                    DeadEnd[i].Background = Brushes.Black;
+                }
+
+                GetPath();
+                for (int i = 0; i < Path.Count; i++)
+                {
+                    if (Path[i] != endNode && Path[i] != startNode)
+                    {
+                        Path[i].Background = Brushes.Green;
+                        Console.WriteLine(Path[i]);
+                    }
                 }
             }
         }
